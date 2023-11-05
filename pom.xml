@@ -116,7 +116,14 @@
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-resteasy-jsonb</artifactId>
           <version>3.5.0</version>
-      </dependency> 
+      </dependency>
+
+<!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-jdbc-mysql -->
+    <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-jdbc-mysql</artifactId>
+        <version>3.5.0</version>
+    </dependency>
 
   </dependencies>
   <build>
