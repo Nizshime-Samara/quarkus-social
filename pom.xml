@@ -88,10 +88,10 @@
         <version>3.5.0</version>
     </dependency>
 
-<!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-jdbc-h2 -->
+<!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-jdbc-mysql -->
     <dependency>
         <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-jdbc-h2</artifactId>
+        <artifactId>quarkus-jdbc-mysql</artifactId>
         <version>3.5.0</version>
     </dependency>
 
