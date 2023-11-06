@@ -2,26 +2,22 @@ package org.estudos.nizshime.camada_de_dominio.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends PanacheEntity {
 
-    public User(Integer id, String name, Integer age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
+    public User() {
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // private Integer id;
 
     @Column(name = "name")
     private String name;
@@ -29,13 +25,13 @@ public class User {
     @Column(name = "age")
     private Integer age;
 
-    public Integer getId() {
-        return this.id;
-    }
+    // public Integer getId() {
+    // return this.id;
+    // }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    // public void setId(Integer id) {
+    // this.id = id;
+    // }
 
     public String getName() {
         return this.name;
@@ -75,8 +71,7 @@ public class User {
     @Override
     public String toString() {
         return "{" +
-                " id='" + getId() + "'" +
-                ", name='" + getName() + "'" +
+                " name='" + getName() + "'" +
                 ", age='" + getAge() + "'" +
                 "}";
     }

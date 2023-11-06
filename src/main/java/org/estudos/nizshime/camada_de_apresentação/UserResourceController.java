@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.estudos.nizshime.camada_de_dominio.dto.CreateUserRequest;
+import org.estudos.nizshime.camada_de_dominio.model.User;
 
 @Path("/users")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -16,7 +17,16 @@ import org.estudos.nizshime.camada_de_dominio.dto.CreateUserRequest;
 public class UserResourceController {
 
     @POST
-    public Response createUser(CreateUserRequest CreateUserRequest) {
+    public Response createUser(CreateUserRequest userRequest) {
+
+        User user = new User();
+        user.setName(userRequest.getNome());
+        user.setAge(userRequest.getIdade());
+        // nao foi necessario setar id pois este é auto-incrementado
+
+        // Entidade pronta para persistir
+        user.persist(); // post -> persiste na tabela
+
         return Response.ok().build();
     }
 
