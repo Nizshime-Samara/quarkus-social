@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
 @Entity
