@@ -1,15 +1,15 @@
 package org.estudos.nizshime.camada_de_dominio.dto;
 
 public class CreateUserRequest {
-    private String nome;
+    private String name;
     private Integer idade;
 
-    public String getNome() {
-        return this.nome;
+    public String getName() {
+        return this.name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getIdade() {
@@ -21,8 +21,8 @@ public class CreateUserRequest {
     }
 
     // Construtores
-    public CreateUserRequest(String nome, Integer idade) {
-        this.nome = nome;
+    public CreateUserRequest(String name, Integer idade) {
+        this.name = name;
         this.idade = idade;
     }
 

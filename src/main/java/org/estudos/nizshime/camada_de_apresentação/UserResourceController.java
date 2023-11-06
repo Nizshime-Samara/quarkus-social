@@ -1,5 +1,6 @@
 package org.estudos.nizshime.camada_de_apresentação;
 
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -17,10 +18,11 @@ import org.estudos.nizshime.camada_de_dominio.model.User;
 public class UserResourceController {
 
     @POST
+    @Transactional
     public Response createUser(CreateUserRequest userRequest) {
 
         User user = new User();
-        user.setName(userRequest.getNome());
+        user.setName(userRequest.getName());
         user.setAge(userRequest.getIdade());
         // nao foi necessario setar id pois este é auto-incrementado
 
