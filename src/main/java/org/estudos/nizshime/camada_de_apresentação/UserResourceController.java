@@ -46,7 +46,7 @@ public class UserResourceController {
             repository.persist(user);
             LOGGER.info("Usuário ID: {} foi persistido com sucesso.", user.getId());
             return Response.status(Response.Status.CREATED)
-                    .entity(user)
+                    .entity("Usuário com ID " + user.getId() + " foi persistido com sucesso.")
                     .build();
         } catch (Exception e) {
             LOGGER.error("Erro ao criar usuário: {}", e.getMessage());
@@ -82,7 +82,7 @@ public class UserResourceController {
             repository.delete(user);
             LOGGER.info("Usuário com ID: {} foi excluído com sucesso.", id);
             return Response.status(Response.Status.OK)
-                    .entity("Usuário com ID: {} foi excluído com sucesso." + id)
+                    .entity("Usuário com ID: " + id + "foi excluído com sucesso.")
                     .build();
         } else {
             LOGGER.error("Usuário não encontrado com o ID: {}", id);
