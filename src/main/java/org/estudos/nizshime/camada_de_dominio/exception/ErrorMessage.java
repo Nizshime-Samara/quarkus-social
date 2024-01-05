@@ -11,6 +11,11 @@ public class ErrorMessage {
     public ErrorMessage(String string) {
     }
 
+    public ErrorMessage(String field, String message) {
+        this.field = field;
+        this.message = message;
+    }
+
     public String getField() {
         return field;
     }
