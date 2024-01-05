@@ -30,19 +30,11 @@ public class UserResourceController {
     private UserRepository repository;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserResourceController.class);
 
-    @Inject // jakarta
+    @Inject
     public UserResourceController(UserRepository repository) {
         this.repository = repository; // para os campos de idade e nome
     }
 
-    /*
-     * O Metodo Post nao é idempotente, sempre retornará um novo dado.
-     * A anotação @Valid ao parâmetro do método createUser, aciona a validação
-     * automática
-     * que irá automaticamente validar o userRequest de acordo com as anotações de
-     * validação
-     * (@NotBlank, @NotNull, etc.) definidas na classe CreateUserRequest
-     */
     @POST
     @Transactional
 
@@ -58,18 +50,17 @@ public class UserResourceController {
                     .build();
         } catch (Exception e) {
             LOGGER.error("Erro ao criar usuário: {}", e.getMessage());
-            throw e; // Re-lança a exceção para o manipulador padrão de exceções do JAX-RS
+            throw e;
         }
     }
 
     @GET
     public Response listAllUsers() {
-        // PanacheQuery<User> query = User.findAll();
         List<User> users = repository.listAll();
 
         if (users.isEmpty()) {
             LOGGER.info("Nenhum usuário foi encontrado na base de dados.");
-            return Response.status(Response.Status.OK)
+            return Response.status(Response.Status.NOT_FOUND)
                     .entity("Nenhum usuário encontrado na base de dados.")
                     .build();
         }
@@ -96,7 +87,7 @@ public class UserResourceController {
         } else {
             LOGGER.error("Usuário não encontrado com o ID: {}", id);
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Usuário não encontrado com o ID: " + id)
+                    .entity("Usuário com ID " + id + " não encontrado.")
                     .build();
         }
     }
@@ -111,7 +102,7 @@ public class UserResourceController {
             user.setName(userData.getName());
             user.setAge(userData.getAge());
             repository.persist(user); // usar ou nao usar -> testar
-            LOGGER.info("Usuário com ID: {} foi atualizado com sucesso.", id);
+            LOGGER.info("Usuário com ID {} foi atualizado com sucesso.", id);
 
             return Response.status(Response.Status.OK)
                     .entity(user)
@@ -119,8 +110,8 @@ public class UserResourceController {
 
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Usuário não encontrado com o ID: " + id)
-                    .build(); // Re-lança a exceção para o manipulador padrão de exceções do JAX-RS
+                    .entity("Usuário com ID " + id + " não encontrado.")
+                    .build();
         }
     }
 }

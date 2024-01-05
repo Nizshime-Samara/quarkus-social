@@ -1,7 +1,5 @@
 package org.estudos.nizshime.camada_de_dominio.exception;
 
-import java.util.Objects;
-
 public class ErrorMessage {
 
     private String field;
