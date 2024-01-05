@@ -10,7 +10,7 @@ You can run your application in dev mode that enables live coding using:
 ```shell script
 ./mvnw compile quarkus:dev 
 ```
-ou
+or
 ```shell script
 mvn compile quarkus:dev
 ```

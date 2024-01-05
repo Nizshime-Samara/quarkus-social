@@ -1,5 +1,13 @@
 package org.estudos.nizshime.camada_de_apresentação;
 
+import java.util.List;
+
+import org.estudos.nizshime.camada_de_dominio.dto.CreateUserRequest;
+import org.estudos.nizshime.camada_de_dominio.model.User;
+import org.estudos.nizshime.camada_de_infraestrutura.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -14,79 +22,105 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.estudos.nizshime.camada_de_dominio.dto.CreateUserRequest;
-import org.estudos.nizshime.camada_de_dominio.model.User;
-import org.estudos.nizshime.camada_de_infraestrutura.repository.UserRepository;
-
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
-
 @Path("/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResourceController {
 
     private UserRepository repository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserResourceController.class);
 
-    @Inject
+    @Inject // jakarta
     public UserResourceController(UserRepository repository) {
-        this.repository = repository;
+        this.repository = repository; // para os campos de idade e nome
     }
 
-    @POST // Post nao é idempotente, sempre retornará um novo dado
-    @Transactional // Apenas para metodos que farão persistencia ou escrita
-    public Response createUser(CreateUserRequest userRequest) {
+    /*
+     * O Metodo Post nao é idempotente, sempre retornará um novo dado.
+     * A anotação @Valid ao parâmetro do método createUser, aciona a validação
+     * automática
+     * que irá automaticamente validar o userRequest de acordo com as anotações de
+     * validação
+     * (@NotBlank, @NotNull, etc.) definidas na classe CreateUserRequest
+     */
+    @POST
+    @Transactional
 
-        User user = new User();
-        user.setName(userRequest.getName());
-        user.setAge(userRequest.getAge());
-        // nao foi necessario setar id pois este é auto-incrementado
-
-        // Entidade pronta para persistir
-        repository.persist(user);
-
-        return Response.ok(user).build();
+    public Response createUser(@Valid CreateUserRequest userRequest) {
+        try {
+            User user = new User();
+            user.setName(userRequest.getName());
+            user.setAge(userRequest.getAge());
+            repository.persist(user);
+            LOGGER.info("Usuário ID: {} foi persistido com sucesso.", user.getId());
+            return Response.status(Response.Status.CREATED)
+                    .entity(user)
+                    .build();
+        } catch (Exception e) {
+            LOGGER.error("Erro ao criar usuário: {}", e.getMessage());
+            throw e; // Re-lança a exceção para o manipulador padrão de exceções do JAX-RS
+        }
     }
 
     @GET
     public Response listAllUsers() {
         // PanacheQuery<User> query = User.findAll();
-        PanacheQuery<User> query = repository.findAll();
-        return Response.ok(query.list()).build();
+        List<User> users = repository.listAll();
+
+        if (users.isEmpty()) {
+            LOGGER.info("Nenhum usuário foi encontrado na base de dados.");
+            return Response.status(Response.Status.OK)
+                    .entity("Nenhum usuário encontrado na base de dados.")
+                    .build();
+        }
+
+        LOGGER.info("Foram recuperados um total de {} usuários com sucesso.", users.size());
+
+        return Response.status(Response.Status.OK)
+                .entity(users)
+                .build();
     }
 
     @DELETE
-    @Transactional // Apenas para metodos que farão persistencia ou escrita
+    @Transactional
     @Path("{id}")
-    // /users/1
     public Response deleteUser(@PathParam("id") Long id) {
 
         User user = repository.findById(id);
-
         if (user != null) {
             repository.delete(user);
-            ;
-            return Response.ok().build();
+            LOGGER.info("Usuário com ID: {} foi excluído com sucesso.", id);
+            return Response.status(Response.Status.OK)
+                    .entity("Usuário com ID: {} foi excluído com sucesso." + id)
+                    .build();
+        } else {
+            LOGGER.error("Usuário não encontrado com o ID: {}", id);
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Usuário não encontrado com o ID: " + id)
+                    .build();
         }
-
-        return Response.status(Response.Status.NOT_FOUND).build();
-
     }
 
     @PUT
-    @Path("{id}") // atualiza alguma entidade
-    @Transactional // Apenas para metodos que farão persistencia ou escrita
+    @Path("{id}")
+    @Transactional
     public Response updateUser(@PathParam("id") Long id, CreateUserRequest userData) {
 
-        // User user = User.findById(id);
-        User user = repository.findById(id);
-
-        if (user != null) {
+        try {
+            User user = repository.findById(id);
             user.setName(userData.getName());
             user.setAge(userData.getAge());
             repository.persist(user); // usar ou nao usar -> testar
-            return Response.ok().build();
-        }
-        return Response.status(Response.Status.NOT_FOUND).entity("Usuário não encontrado com o ID: " + id).build();
+            LOGGER.info("Usuário com ID: {} foi atualizado com sucesso.", id);
 
+            return Response.status(Response.Status.OK)
+                    .entity(user)
+                    .build();
+
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Usuário não encontrado com o ID: " + id)
+                    .build(); // Re-lança a exceção para o manipulador padrão de exceções do JAX-RS
+        }
     }
 }
