@@ -1,9 +1,6 @@
 package org.estudos.nizshime.camada_de_dominio.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import org.estudos.nizshime.camada_de_dominio.model.Post;
 
 import lombok.Data;
 

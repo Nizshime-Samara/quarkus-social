@@ -1,4 +1,4 @@
-package org.estudos.nizshime.camada_de_apresentacao;
+package org.estudos.nizshime.camada_de_apresentacao.rest;
 
 import java.time.LocalDateTime;
 import java.util.List;

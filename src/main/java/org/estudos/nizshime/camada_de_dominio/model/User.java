@@ -9,10 +9,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.Objects;
-
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-
 @Data
 @Entity
 @Table(name = "users")

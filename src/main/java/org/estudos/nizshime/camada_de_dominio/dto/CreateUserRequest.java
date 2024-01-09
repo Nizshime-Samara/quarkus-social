@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class CreateUserRequest {
 
-    @NotBlank(message = "Campo Name obrigatório") // jakarta
+    @NotBlank(message = "Campo Name obrigatório") // Javax
     private String name;
-    @NotNull(message = "Campo numérico obrigatório") // jakarta
+    @NotNull(message = "Campo numérico obrigatório") // Javax
     private Integer age;
 
 }

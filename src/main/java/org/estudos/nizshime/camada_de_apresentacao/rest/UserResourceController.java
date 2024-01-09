@@ -1,4 +1,4 @@
-package org.estudos.nizshime.camada_de_apresentacao;
+package org.estudos.nizshime.camada_de_apresentacao.rest;
 
 import java.util.List;
 
@@ -82,7 +82,7 @@ public class UserResourceController {
             repository.delete(user);
             LOGGER.info("Usuário com ID: {} foi excluído com sucesso.", id);
             return Response.status(Response.Status.OK)
-                    .entity("Usuário com ID: " + id + "foi excluído com sucesso.")
+                    .entity("Usuário com ID " + id + " foi excluído com sucesso.")
                     .build();
         } else {
             LOGGER.error("Usuário não encontrado com o ID: {}", id);
