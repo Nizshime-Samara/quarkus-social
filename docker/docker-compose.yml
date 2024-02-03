@@ -1,0 +1,30 @@
+# docker-compose : Constrói um ambiente estável de desenvolvimento usando override como opção 
+version: '3.8'
+
+services:
+  quarkus-app:
+    build:
+#      context: ../../../
+      context: .
+      dockerfile: Dockerfile.jvm
+    ports:
+      - "8080:8080"
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://mysql-db:3306/quarkus_social
+      QUARKUS_DATASOURCE_USERNAME: root
+      QUARKUS_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql-db
+
+  mysql-db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: quarkus_social
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

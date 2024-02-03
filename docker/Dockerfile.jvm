@@ -7,7 +7,7 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/quarkus-social-jvm .
+# docker build -f docker/Dockerfile.jvm -t quarkus/quarkus-social-jvm .
 #
 # Then run the container using:
 #
@@ -77,21 +77,49 @@
 #   accessed directly. (example: "foo.example.com,bar.example.com")
 #
 ###
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.16
+
+############# APLICANDO CONSTRUÇÃO MULTI ESTÁGIOS PARA CRIAR O EMPACOTAMENTO DA APLICAÇÃO AUTOMATIZADO ############
+
+# Estágio 1: Construindo e empacotando a aplicação com Maven
+FROM maven:3.6.3-openjdk-11 as build
+WORKDIR /quarkus-social
+
+# Copiando os arquivos de definição do projeto
+COPY ../pom.xml .
+COPY ../src .
+
+# Empacotando a aplicação sem executar testes
+RUN mvn clean package -DskipTests
+
+# Estágio 2: Construindo a imagem da aplicação com a JRE
+FROM openjdk:11-jre-slim
 
 ENV LANGUAGE='en_US:en'
 
+# Cria os diretórios para as camadas
+RUN mkdir -p /deployments/lib/ && \
+    mkdir -p /deployments/app/ && \
+    mkdir -p /deployments/quarkus/
+
+# Copia as dependências (camada de bibliotecas) em uma camada separada para aproveitar o cache
+COPY --chown=185 --from=build /project/target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 --from=build /project/target/quarkus-app/*.jar /deployments/
+COPY --chown=185 --from=build /project/target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 --from=build /project/target/quarkus-app/quarkus/ /deployments/quarkus/
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
-COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
-COPY --chown=185 target/quarkus-app/*.jar /deployments/
-COPY --chown=185 target/quarkus-app/app/ /deployments/app/
-COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+#COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
+#COPY --chown=185 target/quarkus-app/*.jar /deployments/
+#COPY --chown=185 target/quarkus-app/app/ /deployments/app/
+#COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8080
 USER 185
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 
-ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+ENTRYPOINT [ "java", "-jar", "/deployments/quarkus-run.jar" ]
 
+# Para construir a imagem utilizando este Dockerfile:
+# usar o comando ' docker-compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up --build '
+ 
