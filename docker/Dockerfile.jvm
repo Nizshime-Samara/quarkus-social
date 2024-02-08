@@ -78,15 +78,15 @@
 #
 ###
 
-############# APLICANDO CONSTRUÇÃO MULTI ESTÁGIOS PARA CRIAR O EMPACOTAMENTO DA APLICAÇÃO AUTOMATIZADO ############
+############# APLICANDO CONSTRUÇÃO MULTI ESTÁGIOS PARA CRIAR O EMPACOTAMENTO DA APLICAÇÃO AUTOMATIZADA ############
 
 # Estágio 1: Construindo e empacotando a aplicação com Maven
 FROM maven:3.6.3-openjdk-11 as build
 WORKDIR /quarkus-social
 
 # Copiando os arquivos de definição do projeto
-COPY ../pom.xml .
-COPY ../src .
+COPY pom.xml .
+COPY src .
 
 # Empacotando a aplicação sem executar testes
 RUN mvn clean package -DskipTests
@@ -102,10 +102,11 @@ RUN mkdir -p /deployments/lib/ && \
     mkdir -p /deployments/quarkus/
 
 # Copia as dependências (camada de bibliotecas) em uma camada separada para aproveitar o cache
-COPY --chown=185 --from=build /project/target/quarkus-app/lib/ /deployments/lib/
-COPY --chown=185 --from=build /project/target/quarkus-app/*.jar /deployments/
-COPY --chown=185 --from=build /project/target/quarkus-app/app/ /deployments/app/
-COPY --chown=185 --from=build /project/target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --chown=185 --from=build /quarkus-social/target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 --from=build /quarkus-social/target/quarkus-app/*.jar /deployments/
+COPY --chown=185 --from=build /quarkus-social/target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 --from=build /quarkus-social/target/quarkus-app/quarkus/ /deployments/quarkus/
+
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 #COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
